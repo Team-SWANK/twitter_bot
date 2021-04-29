@@ -1,0 +1,5 @@
+# Requirements
+tweepy
+dotenv
+numpy
+pillow
