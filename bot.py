@@ -1,4 +1,4 @@
-import logging, os, io, base64, requests
+import logging, os, io, base64, requests, atexit
 import urllib.request
 import tweepy
 import numpy as np
@@ -50,6 +50,7 @@ class MentionsListener(tweepy.StreamListener):
                         'mask': open('mask.jpg', 'rb')
                     }
                     res = requests.post(censor_url + options, files=files)
+
                     # Convert base64 response to image file
                     if res.status_code == 200:
                         fn = "censored" + str(i) + ".jpg"
@@ -76,6 +77,7 @@ class MentionsListener(tweepy.StreamListener):
                     logger.info("Success")
                 except Exception as e:
                     logger.error("Error on reply", exc_info=True)
+
         else:
             if is_reply is not None:
                 target_tweet = self.api.get_status(is_reply)
@@ -124,6 +126,10 @@ def get_tweet_flags(tweet):
     return flags
 
 
+def restart_processes():
+    os.system('nohup python bot.py &')
+
+
 def main(keywords):
     api = create_api()
     mentions_listener = MentionsListener(api)
@@ -136,3 +142,5 @@ def main(keywords):
 
 if __name__ == "__main__":
     main(['@photosense_bot'])
+
+atexit.register(restart_processes)
