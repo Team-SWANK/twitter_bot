@@ -65,7 +65,12 @@ class MentionsListener(tweepy.StreamListener):
                 for fn in file_names:
                     res = self.api.media_upload(fn)
                     media_ids.append(res.media_id)
-
+                
+                # Remove images from our servers after upload
+                for fn in file_names:
+                    if os.path.exists(fn):
+                        os.remove(fn)
+                
                 # Tweet the results
                 try:
                     self.api.update_status(
